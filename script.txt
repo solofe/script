@@ -1,0 +1,51 @@
+#!/bin/bash
+##########S###########O##########L#########O##########F#######E########
+# Solicitar el origen
+echo "Por favor, elija el dispositivo de origen:"
+read origen
+##########S###########O##########L#########O##########F#######E########
+
+# Solicitar ubicación Ej: /home/user/Desktop/directorio/nombre de imagen
+echo "Por favor, ingrese el nombre y la ubicación de la imagen:"
+read imagen
+##########S###########O##########L#########O##########F#######E########
+# Mostrar el menu de opciones
+echo "Por favor, elija el tipo de comando:"
+echo "a) dd"
+echo "b) dc3dd"
+echo "c) Wipe (formateo bajo 0)"
+echo "s) Salir"
+read opcion
+##########S###########O##########L#########O##########F#######E########
+
+# Verificar la opción seleccionada y ejecutar el comando correspondiente
+if [ "$opcion" == "a" ]; then
+    # Crear la imagen utilizando el comando dd
+    sudo dd if=$origen of=$imagen bs=4M
+elif [ "$opcion" == "b" ]; then
+    # Crear la imagen utilizando el comando dc3dd
+    sudo dc3dd if=$origen of=$imagen
+elif [ "$opcion" == "c" ]; then
+    # Realizar un borrado completo (wipe) del dispositivo con el comando shred
+    echo "Realizando el borrado completo del dispositivo..."
+    sudo shred -vfz -n 0 $origen
+else
+    echo "Saliendo del script. Recuerda que Jesucristo es el camino, la verdad y la vida."
+    exit 0
+fi
+##########S###########O##########L#########O##########F#######E########
+
+# Obtener el hash de la imagen utilizando el comando md5sum
+hash=$(sudo md5sum $imagen | awk '{print $1}')
+
+# Obtener una breve descripción del dispositivo utilizando el comando lsblk
+descripcion=$(lsblk -o NAME,SIZE,MODEL | grep $origen)
+##########S###########O##########L#########O##########F#######E########
+
+# Crear el archivo .txt con el hash y la descripción
+echo "Hash: $hash" > $imagen.txt
+echo "Descripción del dispositivo:" >> $imagen.txt
+echo "$descripcion" >> $imagen.txt
+##########S###########O##########L#########O##########F#######E########
+echo "La imagen se ha creado exitosamente y se ha generado el archivo $imagen.txt con el hash y la descripción del dispositivo."
+##########S###########O##########L#########O##########F#######E########
